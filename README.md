@@ -1,12 +1,12 @@
 Starling-Particle-Editor
 ========================
 
-Actionscript 3 Flash tool to create particle effect files (.pex) and .plist files compatible for use with Starling and Sparrow frameworks.  
+HTML5 tool to create particle effect files (.pex) and .plist files compatible for use with Starling, Sparrow frameworks, etc. 
 
-Online version here: http://onebyonedesign.com/flash/particleeditor/  
+Online version here: http://www.loudoweb.fr/app/particleeditor
 	
 This project depends on:  
 
-the Starling Framework: https://github.com/PrimaryFeather/Starling-Framework  
+the Starling Framework: https://github.com/openfl/starling
 	
-the Starling Particle Extension: https://github.com/PrimaryFeather/Starling-Extension-Particle-System
+see project.xml for full dependencies
