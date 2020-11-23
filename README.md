@@ -12,5 +12,5 @@ Dependencies
 | [Openfl](https://github.com/openfl/openfl)      | 8.9.7 |
 | [Lime](https://github.com/loudoweb/lime)      | git |
 | [Starling](https://github.com/openfl/starling)      | 2.5.1 |
-| [simplegui](https://github.com/loudoweb/simplegui)       | git      |
-| [minimalcomps](https://github.com/loudoweb/minimalcomps)  | git      |
+| [simplegui](https://github.com/loudoweb/simplegui-openfl)       | git      |
+| [minimalcomps](https://github.com/loudoweb/minimalcomps-openfl)  | git      |
