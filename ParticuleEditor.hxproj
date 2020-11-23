@@ -21,13 +21,12 @@
     <class path="C:\HaxeToolkit\haxe\lib\simplegui\git" />
     <class path="C:\HaxeToolkit\haxe\lib\minimalcomps\git" />
     <class path="C:\HaxeToolkit\haxe\lib\openfl\8,9,7\src" />
-    <class path="C:\HaxeToolkit\haxe\lib\format\3,5,0" />
     <class path="src" />
     <class path="bin\html5\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="lime=7.8.0&#xA;starling=2.5.1&#xA;simplegui=0.10.0&#xA;minimalcomps=0.9.2&#xA;openfl=8.9.7&#xA;format=3.5.0&#xA;ANDROID_SETUP=true&#xA;ANDROID_NDK_ROOT=C:\Development\Android\NDK\android-ndk-r15c&#xA;howlerjs&#xA;lime-webgl&#xA;lime-dom&#xA;lime-howlerjs&#xA;lime-html5&#xA;HL_PATH=C:\Development\hl-1.10.0-win&#xA;tools=7.8.0&#xA;ANDROID_SDK=C:\Development\Android\SDK\platforms\android-26&#xA;lime-canvas&#xA;no-compilation&#xA;openfl-html5&#xA;JAVA_HOME=C:\Program Files (x86)\java\jdk1.8.0&#xA;fdb&#xA;html5&#xA;web&#xA;html5" />
+    <option directives="lime=7.8.0&#xA;starling=2.5.1&#xA;simplegui=0.10.0&#xA;minimalcomps=0.9.2&#xA;openfl=8.9.7&#xA;ANDROID_SETUP=true&#xA;ANDROID_NDK_ROOT=C:\Development\Android\NDK\android-ndk-r15c&#xA;howlerjs&#xA;lime-webgl&#xA;lime-dom&#xA;lime-howlerjs&#xA;lime-html5&#xA;HL_PATH=C:\Development\hl-1.10.0-win&#xA;tools=7.8.0&#xA;ANDROID_SDK=C:\Development\Android\SDK\platforms\android-26&#xA;lime-canvas&#xA;no-compilation&#xA;openfl-html5&#xA;JAVA_HOME=C:\Program Files (x86)\java\jdk1.8.0&#xA;fdb&#xA;html5&#xA;web&#xA;html5" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
