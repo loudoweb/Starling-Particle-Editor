@@ -44,12 +44,12 @@ class PEXtoPlist
 		 * @param	$pexData	XML String of .pex file
 		 * @return
 		 */
-    public static function createPlist(pexData : String) : String
+    public static function createPlist(pexData : String) : Xml
     {
         var pexXML : Xml = Xml.parse(pexData);
         var pexFast : Access = new Access(pexXML.firstChild());
         var plistXML : Xml = getBlankPlist();
-        var dictXML : Xml = Xml.parse(new Access(plistXML.firstChild()).node.dict.innerData);
+        var dictXML : Xml = plistXML.firstElement().firstElement();
         
         // Do conversions.
         convertToInteger(dictXML, "maxParticles", pexFast);
@@ -71,10 +71,10 @@ class PEXtoPlist
         convertToNumber(dictXML, "startColorBlue", pexFast, "startColor", "blue");
         convertToNumber(dictXML, "startColorAlpha", pexFast, "startColor", "alpha");
         
-        convertToNumber(dictXML, "startColorVarianceRed", pexFast, "red", "startColorVariance");
-        convertToNumber(dictXML, "startColorVarianceGreen", pexFast, "green", "startColorVariance");
-        convertToNumber(dictXML, "startColorVarianceBlue", pexFast, "blue", "startColorVariance");
-        convertToNumber(dictXML, "startColorVarianceAlpha", pexFast, "alpha", "startColorVariance");
+        convertToNumber(dictXML, "startColorVarianceRed", pexFast, "startColorVariance", "red");
+        convertToNumber(dictXML, "startColorVarianceGreen", pexFast, "startColorVariance", "green");
+        convertToNumber(dictXML, "startColorVarianceBlue", pexFast, "startColorVariance", "blue");
+        convertToNumber(dictXML, "startColorVarianceAlpha", pexFast, "startColorVariance", "alpha");
         
         convertToNumber(dictXML, "finishColorRed", pexFast, "finishColor", "red");
         convertToNumber(dictXML, "finishColorGreen", pexFast, "finishColor", "green");
@@ -152,19 +152,15 @@ class PEXtoPlist
     
     private static function getBlankPlist() : Xml
     {
-        return Xml.parse("<plist version=\"1.0\"><dict></dict></plist>");
+        return Xml.parse("<plist version=\"1.0\">\n<dict>\n</dict>\n</plist>");
     }
     
-    private static function getExportXML(xml : Xml) : String
+    private static function getExportXML(xml : Xml) : Xml
     {
-        var str : String;
         
-        str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n";
-        str += xml.toString();
+		xml.insertChild(Xml.parse("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"), 0);
         
-        str = StringTools.replace(str, "        ", "\t");
-        
-        return str;
+        return xml;
     }
     
     private static function extractValue(pex : Access, plistKey : String, pexChildName : String, pexAttributeKey : String) : String
@@ -212,8 +208,8 @@ class PEXtoPlist
         }
         
         //			trace(" --- '" + str + "'" + ($mult != 1 ? " x " + $mult : "") + " => " + value);
-        plist.addChild(Xml.parse("<key>" + plistKey + "</key>"));
-        plist.addChild(Xml.parse("<real>" + value + "</real>"));
+        plist.addChild(Xml.parse("<key>" + plistKey + "</key>\n"));
+        plist.addChild(Xml.parse("<real>" + value + "</real>\n"));
     }
     
     private static function convertToInteger(plist : Xml, plistKey : String, pex : Access, pexChildName : String = null, pexAttributeKey : String = null, mult : Float = 1) : Void
@@ -224,8 +220,8 @@ class PEXtoPlist
         var value : Int = Std.int(Std.parseInt(str) * mult);
         
         //			trace(" --- '" + str + "'" + ($mult != 1 ? " x " + $mult : "") + " => " + value);
-        plist.addChild(Xml.parse("<key>" + plistKey + "</key>"));
-        plist.addChild(Xml.parse("<integer>" + value + "</integer>"));
+        plist.addChild(Xml.parse("<key>" + plistKey + "</key>\n"));
+        plist.addChild(Xml.parse("<integer>" + value + "</integer>\n"));
     }
     
     private static function convertToString(plist : Xml, plistKey : String, pex : Access, pexChildName : String = null, pexAttributeKey : String = null) : Void
@@ -235,8 +231,8 @@ class PEXtoPlist
         var str : String = extractValue(pex, plistKey, pexChildName, pexAttributeKey);
         
         //			trace(" --- '" + str + "'");
-        plist.addChild(Xml.parse("<key>" + plistKey + "</key>"));
-        plist.addChild(Xml.parse("<string>" + str + "</string>"));
+        plist.addChild(Xml.parse("<key>" + plistKey + "</key>\n"));
+        plist.addChild(Xml.parse("<string>" + str + "</string>\n"));
     }
 }
 

@@ -72,8 +72,6 @@ class Main extends Sprite
     
     private function initStage() : Void
     {
-        stage.scaleMode = StageScaleMode.NO_SCALE;
-        stage.align = StageAlign.TOP_LEFT;
         stage.showDefaultContextMenu = false;
     }
     

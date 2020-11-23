@@ -46,6 +46,9 @@ class ParticleConfiguration implements SettingsListener
     public function randomize() : Void
     {
         var randSetting : Float;
+		
+		randSetting = randRange(1, 0, 0);
+        mConfig.node.emitterType.x.set("value", Std.string(randSetting));
         
        randSetting = randRange(1000, 1, 2);
         mConfig.node.maxParticles.x.set("value", Std.string(randSetting));

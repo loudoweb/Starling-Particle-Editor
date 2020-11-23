@@ -9,15 +9,16 @@
 	<app main="Main" file="ParticuleEditor" path="bin" />
 	
 	<window background="#232323" fps="60" />
-	<window width="1400" height="750" unless="mobile" />
+	<window width="0" height="0" unless="mobile" allow-high-dpi="true"/>
 	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
 	
 	<!-- classpath, haxe libs -->
 	<source path="src" />
 	<haxelib name="openfl" />
 	<haxelib name="starling" />
-	<haxelib name="zip" />
 	<haxelib name="simplegui" />
+	
+	<template path="assets/index.html" rename="index.html" />
 	
 	<!-- assets -->
 	<icon path="assets/openfl.svg" />

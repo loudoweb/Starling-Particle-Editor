@@ -1,5 +1,5 @@
 /**
- *	Copyright (c) 2013 Devon O. Wolfgang
+ *	Copyright (c) 2013 Devon O. Wolfgang, 2020 Ludovic Bas
  *
  *	Permission is hereby granted, free of charge, to any person obtaining a copy
  *	of this software and associated documentation files (the "Software"), to deal
@@ -22,20 +22,25 @@
  
 package com.onebyonedesign.particleeditor;
 
+	import haxe.io.Bytes;
+	import haxe.io.BytesOutput;
     import minimalcomps.components.ComboBox; 
     import minimalcomps.components.Component;
+	import minimalcomps.components.HUISlider;
     import minimalcomps.components.Label;
+	import minimalcomps.components.Style;
     import minimalcomps.components.Window;
     import com.ww.PEXtoPlist;
 	import haxe.xml.Access;
+	import openfl.Assets;
+	import openfl.display.PNGEncoderOptions;
     import openfl.events.Event;
 	import openfl.events.Event;
     import openfl.net.FileFilter;
     import openfl.net.FileReference;
     import openfl.utils.ByteArray;
-    //import uk.co.soulwire.gui.SimpleGUI;
-	import SimpleGUI;
-
+	import simplegui.SimpleGUI;
+	
 	typedef  BlendArray = 	{label:String, data:Int };
 	
 	/**
@@ -101,11 +106,23 @@ package com.onebyonedesign.particleeditor;
 		/** Create the SimpleGUI instance */
 		private function initUI():Void 
 		{
+			
+			Style.fontName = Assets.getFont("assets/Roboto-Regular.ttf").fontName;
+			Style.fontSize = 10;
+			Style.embedFonts = false;
+			SimpleGUI.TOOLBAR_HEIGHT = 48;
+			SimpleGUI.COMPONENT_MARGIN = 9;
+			SimpleGUI.COLUMN_MARGIN = 2;
+			SimpleGUI.GROUP_MARGIN = 2;
+			SimpleGUI.PADDING = 18;
+			SimpleGUI.MARGIN = 2;
+			
 			mGUI = new SimpleGUI(mSettings, "General");
 			
 			mGUI.addGroup("Save");
 			mGUI.addButton("Export Particle", { name:"savePartBtn", callback:saveParticle } );
-			mGUI.addToggle("savePlist", { label:"Include .PLIST file", name:"savePlist" } );
+			mGUI.addButton("Export Plist", { name:"savePlist", callback: savePlist } );
+			mGUI.addButton("Export Texture", { name:"saveTexture", callback: saveTexture } );
 			mGUI.addGroup("Load");
 			mGUI.addButton("Load Particle", { name:"loadButton", callback:onLoad } );
 			mGUI.addGroup("Edit");
@@ -185,6 +202,8 @@ package com.onebyonedesign.particleeditor;
 			mGUI.addComboBox("dstBlend", mBlendArray, { label:"Dest.  ", name:"dstBlend" } );
 			
 			mGUI.show();
+			
+			initUIValues();
 		}
         
         //
@@ -214,7 +233,8 @@ package com.onebyonedesign.particleeditor;
 			var xml:Xml = null;
 			try
 			{
-				xml = Xml.parse(cast downloader.data);
+				var str:String = downloader.data.toString();
+				xml = Xml.parse(str);
 			}
 			catch (err) 
 			{
@@ -258,53 +278,21 @@ package com.onebyonedesign.particleeditor;
 		/** Save particle texture image source and config file and optional .plist config to .zip */
 		private function saveParticle(o:Dynamic):Void
 		{
-			/*var zip:ZipOutput = new ZipOutput();
-			var filename:String;
-			var filedata:ByteArray;
-			var entry:ZipEntry;
-            var xml:XML = mParticleConfig.xml;
-			
-			// add pex to zip
-			filename = "particle.pex";
-			filedata = new ByteArray();
-			filedata.writeUTFBytes(xml.toXMLString());
-			filedata.position = 0;
-			
-			entry = new ZipEntry(filename);
-			zip.putNextEntry(entry);
-			zip.write(filedata);
-			zip.closeEntry();
-			
-			// texture to zip
-			filename = "texture.png";
-			filedata = PNGEncoder.encode(mParticleView.particleData);
-			filedata.position = 0;
-			
-			entry = new ZipEntry(filename);
-			zip.putNextEntry(entry);
-			zip.write(filedata);
-			zip.closeEntry();
-			
-			if (mSettings.savePlist)
-			{
-				filename = "particle.plist";
-				var plist:String = PEXtoPlist.createPlist(xml.toXMLString());
-				filedata = new ByteArray();
-				filedata.writeUTFBytes(plist);
-				filedata.position = 0;
-				
-				entry = new ZipEntry(filename);
-				zip.putNextEntry(entry);
-				zip.write(filedata);
-				zip.closeEntry();
-			}
-			
-			// finish the zip
-			zip.finish();
-			*/
-			//downloader.save(zip.byteArray, "particle.zip");
+			downloader.save(mParticleConfig.xml.x, "particle.pex");
 		}
         
+		private function savePlist(o:Dynamic):Void
+		{
+			downloader.save(PEXtoPlist.createPlist(mParticleConfig.xml.x.toString()), "particle.plist");
+					
+		}
+		
+		private function saveTexture(o:Dynamic):Void
+		{
+			var ba:ByteArray = mParticleView.particleData.encode(mParticleView.particleData.rect, new PNGEncoderOptions());
+			downloader.save(ba, "texture.png");
+		}
+		
         //
         // Edit Texture
         //
@@ -373,12 +361,13 @@ package com.onebyonedesign.particleeditor;
 		{
 			var i = mGUI.components.length;
 			
-			while (i-- >= 0) 
+			while (i-- > 0) 
 			{
 				var comp:Component = mGUI.components[i];
-				var val:Float;
-				var idx:Int = 0;
-                
+				var val:Float = 0.0;
+				var idx = 0;
+				var setValue = true;
+
                 switch(comp.name)
                 {
                     case "emitterType" :
@@ -395,6 +384,7 @@ package com.onebyonedesign.particleeditor;
                         
                         mSettings.emitterType = idx;
                         cast(comp, ComboBox).selectedIndex = idx;
+						setValue = false;
                         
                     case "maxParts" :
                         val = Std.parseFloat(fast.node.maxParticles.att.value);
@@ -603,6 +593,7 @@ package com.onebyonedesign.particleeditor;
                         }
                         mSettings.srcBlend = Std.int(val);
                         cast(comp, ComboBox).selectedIndex = idx;
+						setValue = false;
                         
                     case "dstBlend" :
                         val = Std.parseFloat(fast.node.blendFuncDestination.att.value);
@@ -633,11 +624,191 @@ package com.onebyonedesign.particleeditor;
                         }
                         mSettings.dstBlend = Std.int(val);
                         cast(comp, ComboBox).selectedIndex = idx;
-                        
+                        setValue = false;
                     default :
+						setValue = false;
                         trace("Couldn't update setting for comp named: '" + comp.name + "'");
+				}
+
+				if (setValue)
+				{
+					cast(comp, HUISlider).value = val;
 				}
 			}
 			fast = null;
+		}
+		
+		/**
+		 * Init UI values when starting editor
+		 */
+		function initUIValues():Void
+		{
+			var i = mGUI.components.length;
+			
+			while (i-- > 0) 
+			{
+				var comp:Component = mGUI.components[i];
+				var val:Float = 0.0;
+				var idx = 0;
+				var setValue = true;
+
+                switch(comp.name)
+                {
+                    case "emitterType" :
+                        cast(comp, ComboBox).selectedIndex =  mSettings.emitterType;
+						setValue = false;
+                        
+                    case "maxParts" :
+                        val = mSettings.maxParts;
+                        
+                    case "lifeSpan" :
+                        val =  mSettings.lifeSpan;
+                        
+                    case "lifeSpanVar" :
+                        val = mSettings.lifeSpanVar;
+                        
+                    case "startSize" :
+                        val = mSettings.startSize;
+                        
+                    case "startSizeVar" :
+                        val = mSettings.startSizeVar;
+                        
+                    case "finishSize" :
+                        val = mSettings.finishSize;
+                        
+                    case "finishSizeVar" :
+                        val = mSettings.finishSizeVar;
+                        
+                    case "emitAngle" :
+                        val = mSettings.emitAngle;
+                        
+                    case "emitAngleVar" :      
+                        val = mSettings.emitAngleVar;
+                        
+                    case "stRot" :
+                        val = mSettings.stRot;
+                        
+                    case "stRotVar" :
+                        val = mSettings.stRotVar;
+                        
+                    case "endRot" :
+                        val = mSettings.endRot;
+                        
+                    case "endRotVar" :
+                        val = mSettings.endRotVar;
+                        
+                    case "xPosVar" :
+                        val = mSettings.xPosVar;
+                        
+                    case "yPosVar" :
+                        val = mSettings.yPosVar;
+                        
+                    case "speed" :
+                        val = mSettings.speed;
+                        
+                    case "speedVar" :
+                        val = mSettings.speedVar;
+                        
+                    case "gravX" :
+                        val = mSettings.gravX;
+                        
+                    case "gravY" :
+                        val = mSettings.gravY;
+                        
+                    case "tanAcc" :
+                        val = mSettings.tanAcc;
+                        
+                    case "tanAccVar" :
+                        val = mSettings.tanAccVar;
+                        
+                    case "radialAcc" :
+                        val =  mSettings.radialAcc;
+                        
+                    case "radialAccVar" :
+                        val = mSettings.radialAccVar;
+                        
+                    case "maxRadius" :
+                        val = mSettings.maxRadius;
+                        
+                    case "maxRadiusVar" :
+                        val = mSettings.maxRadiusVar;
+                        
+                    case "minRadius" :
+                        val = mSettings.minRadius;
+                        
+                    case "minRadiusVar" :
+                        val = mSettings.minRadiusVar;
+                        
+                    case "degPerSec" :
+                        val = mSettings.degPerSec;
+                        
+                    case "degPerSecVar" :
+                        val = mSettings.degPerSecVar;
+                        
+                    case "sr" :
+                        val = mSettings.sr;
+                        
+                    case "sg" :
+                        val = mSettings.sg;
+                        
+                    case "sb" :
+                        val = mSettings.sb;
+                        
+                    case "sa" :
+                        val = mSettings.sa;
+                        
+                    case "fr" :
+                        val = mSettings.fr;
+                        
+                    case "fg" :
+                        val = mSettings.fg;
+                        
+                    case "fb" :
+                        val = mSettings.fb;
+                        
+                    case "fa" :
+                        val = mSettings.fa;
+                        
+                    case "svr" :
+                        val = mSettings.svr;
+                        
+                    case "svg" :
+                        val = mSettings.svg;
+                        
+                    case "svb" :
+                        val = mSettings.svb;
+                        
+                    case "sva" :
+                        val = mSettings.sva;
+                        
+                    case "fvr" :
+                        val = mSettings.fvr;
+                        
+                    case "fvg" :
+                        val = mSettings.fvg;
+                        
+                    case "fvb" :
+                        val = mSettings.fvb;
+                        
+                    case "fva" :
+                        val = mSettings.fva;
+                        
+                    case "srcBlend" :
+                        cast(comp, ComboBox).selectedIndex = mSettings.srcBlend;
+						setValue = false;
+                        
+                    case "dstBlend" :
+                        cast(comp, ComboBox).selectedIndex = mSettings.dstBlend;
+                        setValue = false;
+                    default :
+						setValue = false;
+                        trace("Couldn't update setting for comp named: '" + comp.name + "'");
+				}
+
+				if (setValue)
+				{
+					cast(comp, HUISlider).value = val;
+				}
+			}
 		}
 	}
